@@ -1,6 +1,14 @@
+// ignore_for_file: unused_field, prefer_final_fields, library_private_types_in_public_api
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
+import 'package:score/login_page.dart';
 
 class PlayersPage extends StatefulWidget {
+  const PlayersPage({super.key});
+
   @override
   _PlayersPageState createState() => _PlayersPageState();
 }
@@ -18,17 +26,38 @@ class _PlayersPageState extends State<PlayersPage> {
     'Item 5',
   ];
 
+  Future<bool> getIsLogin() async {
+    return await FlutterSession().get("isLogin");
+  }
+
+  bool _isLogin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getIsLogin().then((result) {
+      setState(() {
+        _isLogin = result;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Players List"),
+        title: const Text("Players List"),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.person),
+            icon: Icon(_isLogin ? Icons.logout : Icons.person),
             onPressed: () {
-              // Navigate to profile screen
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginPage(),
+                ),
+              );
             },
           ),
         ],

@@ -1,6 +1,15 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:flutter_session/flutter_session.dart';
+import 'package:score/players_page.dart';
+
+var session = FlutterSession();
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -14,54 +23,95 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              TextFormField(
-                validator: (value) {
-                  if (value == '') {
-                    return 'Please enter your email';
-                  }
-                  return null;
-                },
-                onSaved: (value) => _email = value!,
-                decoration: InputDecoration(
-                  labelText: 'Email',
+            children: [
+              Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.all(30),
+                      child: Image.asset(
+                        "assets/logo.png",
+                        height: 100,
+                        width: 500,
+                      ),
+                    ),
+                    TextFormField(
+                      validator: (value) {
+                        if (value == '') {
+                          return 'Please enter your email';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) => _email = value!,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                      ),
+                    ),
+                    const SizedBox(height: 10.0),
+                    TextFormField(
+                      validator: (value) {
+                        if (value != null) {
+                          if (value.length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+                        }
+                        return null;
+                      },
+                      onSaved: (value) => _password = value ?? '',
+                      decoration: const InputDecoration(
+                        labelText: 'Password',
+                      ),
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 20.0),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          if (_email == 'admin@admin.cm' &&
+                              _password == 'admincm') {
+                            session.set("isLogin", true);
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const PlayersPage(),
+                              ),
+                            );
+                          } else {
+                            // Show a popup indicating login failure
+                            await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("Login Failed"),
+                                  content: const Text(
+                                      "Email or Password is incorrect."),
+                                  actions: [
+                                    ElevatedButton(
+                                      child: const Text("OK"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        }
+                      },
+                      child: const Text('Login'),
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(height: 10.0),
-              TextFormField(
-                validator: (value) {
-                  if (value != null) {
-                    if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
-                    }
-                  }
-                  return null;
-                },
-                onSaved: (value) => _password = value ?? '',
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                ),
-                obscureText: true,
-              ),
-              SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    // Login logic goes here
-                  }
-                },
-                child: Text('Login'),
               ),
             ],
-          ),
-        ),
-      ),
+          )),
     );
   }
 }
