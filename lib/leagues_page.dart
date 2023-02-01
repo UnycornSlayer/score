@@ -1,31 +1,17 @@
 // ignore_for_file: unused_field, prefer_final_fields, library_private_types_in_public_api
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 import 'package:score/login_page.dart';
 
-class PlayersPage extends StatefulWidget {
-  const PlayersPage({super.key});
+class LeaguesPage extends StatefulWidget {
+  const LeaguesPage({super.key});
 
   @override
-  _PlayersPageState createState() => _PlayersPageState();
+  _LeaguesPageState createState() => _LeaguesPageState();
 }
 
-class _PlayersPageState extends State<PlayersPage> {
-  String _selectedFilter = 'All';
-
-// List of items in our dropdown menu
-  String dropdownvalue = 'Item 1';
-  var items = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
-  ];
-
+class _LeaguesPageState extends State<LeaguesPage> {
   Future<bool> getIsLogin() async {
     return await FlutterSession().get("isLogin");
   }
@@ -41,6 +27,8 @@ class _PlayersPageState extends State<PlayersPage> {
       });
     });
   }
+
+  String _selectedFilter = 'All';
 
   int _selectedIndex = 0;
 
@@ -82,7 +70,7 @@ class _PlayersPageState extends State<PlayersPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Players List"),
+        title: const Text("Competitions"),
         actions: <Widget>[
           IconButton(
             icon: Icon(_isLogin ? Icons.logout : Icons.person),
@@ -99,47 +87,54 @@ class _PlayersPageState extends State<PlayersPage> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                DropdownButton(
-                  // Initial Value
-                  value: dropdownvalue,
-
-                  // Down Arrow Icon
-                  icon: const Icon(Icons.keyboard_arrow_down),
-
-                  // Array list of items
-                  items: items.map((String items) {
-                    return DropdownMenuItem(
-                      value: items,
-                      child: Text(items),
-                    );
-                  }).toList(),
-                  // After selecting the desired option,it will
-                  // change button value to selected value
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      dropdownvalue = newValue!;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
           Expanded(
-            child: ListView.builder(
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text("Item $index"),
+            child: ListView(
+              children: <Widget>[
+                GestureDetector(
                   onTap: () {
-                    // Handle item click
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LeaguesPage(),
+                      ),
+                    );
                   },
-                );
-              },
+                  child: Card(
+                    child: ListTile(
+                      leading: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.network(
+                          "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Flag_of_Portugal.svg/320px-Flag_of_Portugal.svg.png",
+                          scale: 1.5,
+                        ),
+                      ),
+                      title: const Text('Liga Portugal Bwin'),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LeaguesPage(),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    child: ListTile(
+                      leading: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.network(
+                          "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Flag_of_Portugal.svg/320px-Flag_of_Portugal.svg.png",
+                          scale: 1.5,
+                        ),
+                      ),
+                      title: const Text('Liga Portugal SABSEG'),
+                    ),
+                  ),
+                )
+              ],
             ),
           ),
         ],

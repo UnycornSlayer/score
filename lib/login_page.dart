@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_session/flutter_session.dart';
-import 'package:score/players_page.dart';
+import 'package:score/leagues_page.dart';
 
 var session = FlutterSession();
 
@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Padding(
-                      padding: EdgeInsets.all(30),
+                      padding: const EdgeInsets.all(30),
                       child: Image.asset(
                         "assets/logo.png",
                         height: 100,
@@ -69,6 +69,40 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: true,
                     ),
                     const SizedBox(height: 20.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: InkWell(
+                            onTap: () {
+                              session.set("isLogin", false);
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LeaguesPage(),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                // adding color will hide the splash effect
+                                // color: Colors.blueGrey.shade200,
+                              ),
+                              child: const Text(
+                                "Continue as Guest!",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color.fromRGBO(28, 75, 130, 100),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
@@ -79,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const PlayersPage(),
+                                builder: (context) => const LeaguesPage(),
                               ),
                             );
                           } else {
@@ -105,7 +139,10 @@ class _LoginPageState extends State<LoginPage> {
                           }
                         }
                       },
-                      child: const Text('Login'),
+                      child: const Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text("Login"),
+                      ),
                     ),
                   ],
                 ),
