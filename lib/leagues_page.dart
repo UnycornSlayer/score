@@ -55,12 +55,13 @@ class _LeaguesPageState extends State<LeaguesPage> {
         // );
         break;
       case 2:
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => SearchPage(),
-        //   ),
-        // );
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => const LoginPage(),
+          ),
+          (route) => false,
+        );
         break;
     }
   }
@@ -71,19 +72,6 @@ class _LeaguesPageState extends State<LeaguesPage> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Competitions"),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(_isLogin ? Icons.logout : Icons.person),
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoginPage(),
-                ),
-              );
-            },
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -142,18 +130,18 @@ class _LeaguesPageState extends State<LeaguesPage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
+        items: [
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: "Home",
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.search),
             label: "Search",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
+            icon: Icon(_isLogin ? Icons.logout : Icons.person),
+            label: _isLogin ? "Logout" : "Login",
           ),
         ],
       ),

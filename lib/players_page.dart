@@ -67,12 +67,13 @@ class _PlayersPageState extends State<PlayersPage> {
         // );
         break;
       case 2:
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => SearchPage(),
-        //   ),
-        // );
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => const LoginPage(),
+          ),
+          (route) => false,
+        );
         break;
     }
   }
