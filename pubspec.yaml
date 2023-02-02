@@ -38,6 +38,7 @@ dependencies:
   flutter_session: ^0.1.1
   flag: ^6.0.0
   country_icons: ^2.0.2
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:

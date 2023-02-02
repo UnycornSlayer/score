@@ -1,6 +1,7 @@
 // ignore_for_file: unused_field, prefer_final_fields, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_session/flutter_session.dart';
 import 'package:score/login_page.dart';
 import 'package:score/players_page.dart';
@@ -21,6 +22,7 @@ class _LeaguesPageState extends State<LeaguesPage> {
 
   @override
   void initState() {
+    _selectedIndex = 0;
     super.initState();
     getIsLogin().then((result) {
       setState(() {
@@ -29,9 +31,8 @@ class _LeaguesPageState extends State<LeaguesPage> {
     });
   }
 
-  String _selectedFilter = 'All';
-
   int _selectedIndex = 0;
+  String _selectedFilter = 'All';
 
   void _onItemTapped(int index) {
     setState(() {
@@ -40,12 +41,12 @@ class _LeaguesPageState extends State<LeaguesPage> {
 
     switch (index) {
       case 0:
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => SearchPage(),
-        //   ),
-        // );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LeaguesPage(),
+          ),
+        );
         break;
       case 1:
         Navigator.push(

@@ -54,14 +54,14 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 10.0),
                     TextFormField(
-                      validator: (value) {
-                        if (value != null) {
-                          if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
-                          }
-                        }
-                        return null;
-                      },
+                      // validator: (value) {
+                      //   if (value != null) {
+                      //     if (value.length < 6) {
+                      //       return 'Password must be at least 6 characters';
+                      //     }
+                      //   }
+                      //   return null;
+                      // },
                       onSaved: (value) => _password = value ?? '',
                       decoration: const InputDecoration(
                         labelText: 'Password',
@@ -107,8 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-                          if (_email == 'admin@admin.cm' &&
-                              _password == 'admincm') {
+                          if (_email == '1' && _password == '1') {
                             session.set("isLogin", true);
                             Navigator.pushReplacement(
                               context,

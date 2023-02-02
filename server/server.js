@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 var mysql = require("mysql");
+const bodyParser = require("body-parser");
 
 const app = express();
 
@@ -11,15 +12,8 @@ var con = mysql.createConnection({
   database: "score",
 });
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET,PUT,PATCH,POST,DELETE");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+app.use(cors());
+app.use(bodyParser.json());
 
 con.connect(function (err) {
   if (err) throw err;
@@ -36,6 +30,27 @@ app.get("/seasons", (req, res) => {
     let result = Object.values(JSON.parse(JSON.stringify(rows)));
     res.send(result);
   });
+});
+
+app.post("/users", (req, res) => {
+  const { firstName, lastName, height, weight, birthday, education, passport } =
+    req.body;
+
+  // Prepare the query
+  const query = `INSERT INTO users (firstName, lastName, height, weight, birthDate, education, passport)
+                  VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+  // Execute the prepared statement
+  con.query(
+    query,
+    [firstName, lastName, height, weight, birthday, education, passport],
+    (error, results) => {
+      if (error) {
+        return res.status(500).json({ error });
+      }
+      return res.json({ results });
+    }
+  );
 });
 
 app.listen(3000, () => {
