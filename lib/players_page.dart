@@ -14,9 +14,10 @@ import 'package:score/login_page.dart';
 
 class PlayersPage extends StatefulWidget {
   final int? clubId;
+  final int? seasonId;
   final String? clubName;
 
-  const PlayersPage({super.key, this.clubId, this.clubName});
+  const PlayersPage({super.key, this.clubId, this.clubName, this.seasonId = 1});
 
   @override
   _PlayersPageState createState() => _PlayersPageState();
@@ -359,12 +360,10 @@ class _PlayersPageState extends State<PlayersPage> {
   // ----------------- END OF MODAL ------------------------- //
 
   List<Map<String, dynamic>> seasonsList = [];
-  List<String> playersList = [];
-  List<String> playersFirstName = [];
-  List<String> playersLastName = [];
-  List<String> playersImage = [];
+  List<Map<String, dynamic>> playersList = [];
   String dropdownvalue = '';
   int? _clubId;
+  int? _seasonId;
   String? _clubName;
 
   @override
@@ -373,6 +372,7 @@ class _PlayersPageState extends State<PlayersPage> {
     dateinput.text = "";
     _selectedIndex = 1;
     _clubId = widget.clubId;
+    _seasonId = widget.seasonId;
     super.initState();
     getIsLogin().then((result) {
       setState(() {
@@ -385,8 +385,7 @@ class _PlayersPageState extends State<PlayersPage> {
         dropdownvalue = seasonsList[0]['id'];
       });
     });
-
-    fetchPlayers(_clubId!, 1).then((result) {
+    fetchPlayers(_clubId!, _seasonId!).then((result) {
       setState(() {
         playersList = result;
       });
@@ -416,7 +415,8 @@ class _PlayersPageState extends State<PlayersPage> {
   }
 
   // function to send GET request to API to get every player of this club
-  Future<List<String>> fetchPlayers(int clubId, int seasonId) async {
+  Future<List<Map<String, dynamic>>> fetchPlayers(
+      int clubId, int seasonId) async {
     // var url = Uri.parse('http://192.168.1.231:3000/seasons');
     var url = Uri.parse('http://localhost:3000/players/$clubId/$seasonId');
     var response = await http.get(url);
@@ -424,9 +424,10 @@ class _PlayersPageState extends State<PlayersPage> {
     if (response.statusCode == 200) {
       var players = json.decode(response.body);
       for (var i = 0; i < players.length; i++) {
-        playersFirstName.add(players[i]["first_name"].toString());
-        playersLastName.add(players[i]["last_name"].toString());
-        playersImage.add(players[i]["photo"].toString());
+        playersList.add({
+          "first_name": players[i]["first_name"].toString(),
+          "last_name": players[i]["last_name"].toString(),
+        });
       }
       return playersList;
     } else {
@@ -528,11 +529,15 @@ class _PlayersPageState extends State<PlayersPage> {
                   onChanged: (dynamic newValue) {
                     setState(() {
                       dropdownvalue = newValue;
-                      fetchPlayers(1, int.parse(dropdownvalue)).then((result) {
-                        setState(() {
-                          playersList = result;
-                        });
-                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PlayersPage(
+                              clubId: _clubId,
+                              clubName: _clubName,
+                              seasonId: int.parse(dropdownvalue)),
+                        ),
+                      );
                     });
                   },
                 ),
@@ -541,14 +546,14 @@ class _PlayersPageState extends State<PlayersPage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: playersFirstName.length,
+              itemCount: playersList.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   onTap: () => {
                     // TODO: Handle player click
                   },
                   title: Text(
-                      "${playersFirstName[index]} ${playersLastName[index]}"),
+                      "${playersList[index]["first_name"]} ${playersList[index]["last_name"]}"),
                   subtitle: const Text("Contrado a: "),
                 );
               },

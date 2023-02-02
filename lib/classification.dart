@@ -15,8 +15,9 @@ import 'players_page.dart';
 
 class Classification extends StatefulWidget {
   final int? leagueId;
+  final int? seasonId;
 
-  const Classification({super.key, this.leagueId});
+  const Classification({super.key, this.leagueId, this.seasonId = 1});
 
   @override
   _ClassificationState createState() => _ClassificationState();
@@ -30,10 +31,12 @@ class _ClassificationState extends State<Classification> {
   List<String> teamsList = [];
   String dropdownvalue = 'All';
   int? _leagueId;
+  int? _seasonId;
 
   @override
   void initState() {
     _leagueId = widget.leagueId;
+    _seasonId = widget.seasonId;
     _selectedIndex = 1;
     super.initState();
     getIsLogin().then((result) {
@@ -48,7 +51,7 @@ class _ClassificationState extends State<Classification> {
       });
     });
 
-    fetchClubs(_leagueId, 1).then((result) {
+    fetchClubs(_leagueId, _seasonId).then((result) {
       setState(() {
         teamsList = result;
       });
@@ -79,6 +82,18 @@ class _ClassificationState extends State<Classification> {
 
   // function to send GET request to API to get every player of this club
   Future<List<String>> fetchClubs(leagueId, seasonId) async {
+    if (_leagueId == 1 && _seasonId == 2) {
+      leagueId = 3;
+    }
+    if (_leagueId == 1 && _seasonId == 3) {
+      leagueId = 5;
+    }
+    if (_leagueId == 2 && _seasonId == 2) {
+      leagueId = 4;
+    }
+    if (_leagueId == 2 && _seasonId == 3) {
+      leagueId = 6;
+    }
     // var url = Uri.parse('http://192.168.1.231:3000/seasons');
     var url = Uri.parse('http://localhost:3000/teams/$leagueId/$seasonId');
     var response = await http.get(url);
@@ -173,12 +188,14 @@ class _ClassificationState extends State<Classification> {
                   onChanged: (dynamic newValue) {
                     setState(() {
                       dropdownvalue = newValue;
-                      fetchClubs(_leagueId, int.parse(dropdownvalue))
-                          .then((result) {
-                        setState(() {
-                          teamsList = result;
-                        });
-                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Classification(
+                              leagueId: _leagueId,
+                              seasonId: int.parse(dropdownvalue)),
+                        ),
+                      );
                     });
                   },
                 ),
