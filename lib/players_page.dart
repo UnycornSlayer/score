@@ -13,7 +13,10 @@ import 'package:score/leagues_page.dart';
 import 'package:score/login_page.dart';
 
 class PlayersPage extends StatefulWidget {
-  const PlayersPage({super.key});
+  final int? clubId;
+  final String? clubName;
+
+  const PlayersPage({super.key, this.clubId, this.clubName});
 
   @override
   _PlayersPageState createState() => _PlayersPageState();
@@ -29,7 +32,7 @@ class _PlayersPageState extends State<PlayersPage> {
       String birthday,
       String education,
       int passport) async {
-    var url = Uri.parse('http://192.168.1.64:3000/users');
+    var url = Uri.parse('http://localhost:3000/users');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -61,7 +64,7 @@ class _PlayersPageState extends State<PlayersPage> {
   int _passport = 0;
   // ----------------- END OF data ------------------------- //
 
-// ----------------- START OF MODAL ------------------------- //
+  // ----------------- START OF MODAL ------------------------- //
   _showFullModal(context) {
     showGeneralDialog(
       context: context,
@@ -361,11 +364,15 @@ class _PlayersPageState extends State<PlayersPage> {
   List<String> playersLastName = [];
   List<String> playersImage = [];
   String dropdownvalue = '';
+  int? _clubId;
+  String? _clubName;
 
   @override
   void initState() {
+    _clubName = widget.clubName;
     dateinput.text = "";
     _selectedIndex = 1;
+    _clubId = widget.clubId;
     super.initState();
     getIsLogin().then((result) {
       setState(() {
@@ -379,7 +386,7 @@ class _PlayersPageState extends State<PlayersPage> {
       });
     });
 
-    fetchPlayers(1, 1).then((result) {
+    fetchPlayers(_clubId!, 1).then((result) {
       setState(() {
         playersList = result;
       });
@@ -389,7 +396,7 @@ class _PlayersPageState extends State<PlayersPage> {
   // function to send GET request to API to get every Season
   Future<List<Map<String, dynamic>>> fetchSeasons() async {
     // var url = Uri.parse('http://192.168.1.231:3000/seasons');
-    var url = Uri.parse('http://192.168.1.64:3000/seasons');
+    var url = Uri.parse('http://localhost:3000/seasons');
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -411,7 +418,7 @@ class _PlayersPageState extends State<PlayersPage> {
   // function to send GET request to API to get every player of this club
   Future<List<String>> fetchPlayers(int clubId, int seasonId) async {
     // var url = Uri.parse('http://192.168.1.231:3000/seasons');
-    var url = Uri.parse('http://192.168.1.64:3000/players/1/$seasonId');
+    var url = Uri.parse('http://localhost:3000/players/$clubId/$seasonId');
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -455,7 +462,9 @@ class _PlayersPageState extends State<PlayersPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const PlayersPage(),
+            builder: (context) => PlayersPage(
+              clubId: _clubId,
+            ),
           ),
         );
         break;
@@ -476,7 +485,7 @@ class _PlayersPageState extends State<PlayersPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Competitions"),
+        title: Text(_clubName!),
         actions: <Widget>[
           _isLogin
               ? Padding(
@@ -499,7 +508,6 @@ class _PlayersPageState extends State<PlayersPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // TODO: See what is going on with the Click event to be able to send seasonId to API Call
                 DropdownButton(
                   // Initial Value
                   value: dropdownvalue,

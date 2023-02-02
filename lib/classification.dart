@@ -14,7 +14,9 @@ import 'package:score/login_page.dart';
 import 'players_page.dart';
 
 class Classification extends StatefulWidget {
-  const Classification({super.key});
+  final int? leagueId;
+
+  const Classification({super.key, this.leagueId});
 
   @override
   _ClassificationState createState() => _ClassificationState();
@@ -22,12 +24,16 @@ class Classification extends StatefulWidget {
 
 class _ClassificationState extends State<Classification> {
   // function to send POST request to API with form params
-  List<String> seasonsList = [];
+  List<Map<String, dynamic>> seasonsList = [];
+  List<String> teamsNames = [];
+  List<String> teamsIds = [];
   List<String> teamsList = [];
   String dropdownvalue = 'All';
+  int? _leagueId;
 
   @override
   void initState() {
+    _leagueId = widget.leagueId;
     _selectedIndex = 1;
     super.initState();
     getIsLogin().then((result) {
@@ -38,11 +44,11 @@ class _ClassificationState extends State<Classification> {
     fetchSeasons().then((result) {
       setState(() {
         seasonsList = result;
-        dropdownvalue = seasonsList[0];
+        dropdownvalue = seasonsList[0]['id'];
       });
     });
 
-    fetchClubs(1).then((result) {
+    fetchClubs(_leagueId, 1).then((result) {
       setState(() {
         teamsList = result;
       });
@@ -50,7 +56,7 @@ class _ClassificationState extends State<Classification> {
   }
 
   // function to send GET request to API to get every Season
-  Future<List<String>> fetchSeasons() async {
+  Future<List<Map<String, dynamic>>> fetchSeasons() async {
     // var url = Uri.parse('http://192.168.1.231:3000/seasons');
     var url = Uri.parse('http://localhost:3000/seasons');
     var response = await http.get(url);
@@ -58,7 +64,12 @@ class _ClassificationState extends State<Classification> {
     if (response.statusCode == 200) {
       var seasons = json.decode(response.body);
       for (var i = 0; i < seasons.length; i++) {
-        seasonsList.add(seasons[i]['name'].toString());
+        seasonsList.add(
+          {
+            "id": seasons[i]['id'].toString(),
+            "name": seasons[i]['name'].toString(),
+          },
+        );
       }
       return seasonsList;
     } else {
@@ -67,15 +78,16 @@ class _ClassificationState extends State<Classification> {
   }
 
   // function to send GET request to API to get every player of this club
-  Future<List<String>> fetchClubs(clubId) async {
+  Future<List<String>> fetchClubs(leagueId, seasonId) async {
     // var url = Uri.parse('http://192.168.1.231:3000/seasons');
-    var url = Uri.parse('http://localhost:3000/teams/1/1');
+    var url = Uri.parse('http://localhost:3000/teams/$leagueId/$seasonId');
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
       var teams = json.decode(response.body);
       for (var i = 0; i < teams.length; i++) {
-        teamsList.add(teams[i]["name"].toString());
+        teamsNames.add(teams[i]["name"].toString());
+        teamsIds.add(teams[i]["id"].toString());
       }
       return teamsList;
     } else {
@@ -141,7 +153,6 @@ class _ClassificationState extends State<Classification> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // TODO: See what is going on with the Click event to be able to send seasonId to API Call
                 DropdownButton(
                   // Initial Value
                   value: dropdownvalue,
@@ -151,17 +162,23 @@ class _ClassificationState extends State<Classification> {
 
                   // Array list of items
 
-                  items: seasonsList.map((String items) {
+                  items: seasonsList.map((Map<String, dynamic> items) {
                     return DropdownMenuItem(
-                      value: items,
-                      child: Text(items),
+                      value: items['id'],
+                      child: Text(items['name']),
                     );
                   }).toList(),
                   // After selecting the desired option,it will
                   // change button value to selected value
-                  onChanged: (String? newValue) {
+                  onChanged: (dynamic newValue) {
                     setState(() {
-                      dropdownvalue = newValue!;
+                      dropdownvalue = newValue;
+                      fetchClubs(_leagueId, int.parse(dropdownvalue))
+                          .then((result) {
+                        setState(() {
+                          teamsList = result;
+                        });
+                      });
                     });
                   },
                 ),
@@ -189,20 +206,28 @@ class _ClassificationState extends State<Classification> {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: teamsList.length,
+                    itemCount: teamsNames.length,
                     itemBuilder: (context, index) {
                       return Row(
                         children: [
                           SizedBox(
                             width: 50,
-                            child: Text("      #$index."),
+                            child: Text("      #${index + 1}."),
                           ),
                           Expanded(
                             child: ListTile(
                               onTap: () {
-                                // TODO: Handle team click
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PlayersPage(
+                                      clubId: int.parse(teamsIds[index]),
+                                      clubName: teamsNames[index],
+                                    ),
+                                  ),
+                                );
                               },
-                              title: Text("${teamsList[index]}"),
+                              title: Text(teamsNames[index]),
                             ),
                           ),
                           SizedBox(

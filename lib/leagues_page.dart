@@ -86,7 +86,9 @@ class _LeaguesPageState extends State<LeaguesPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const Classification(),
+                        builder: (context) => const Classification(
+                          leagueId: 1,
+                        ),
                       ),
                     );
                   },
@@ -108,7 +110,9 @@ class _LeaguesPageState extends State<LeaguesPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const Classification(),
+                        builder: (context) => const Classification(
+                          leagueId: 2,
+                        ),
                       ),
                     );
                   },
