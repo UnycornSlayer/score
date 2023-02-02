@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_session/flutter_session.dart';
+import 'package:score/classification.dart';
 import 'package:score/login_page.dart';
 import 'package:score/players_page.dart';
 
@@ -85,7 +86,7 @@ class _LeaguesPageState extends State<LeaguesPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const LeaguesPage(),
+                        builder: (context) => const Classification(),
                       ),
                     );
                   },
@@ -107,7 +108,7 @@ class _LeaguesPageState extends State<LeaguesPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const LeaguesPage(),
+                        builder: (context) => const Classification(),
                       ),
                     );
                   },

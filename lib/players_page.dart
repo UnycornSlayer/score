@@ -526,8 +526,12 @@ class _PlayersPageState extends State<PlayersPage> {
               itemCount: playersFirstName.length,
               itemBuilder: (context, index) {
                 return ListTile(
+                  onTap: () => {
+                    // TODO: Handle player click
+                  },
                   title: Text(
                       "${playersFirstName[index]} ${playersLastName[index]}"),
+                  subtitle: const Text("Contrado a: "),
                 );
               },
             ),

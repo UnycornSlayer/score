@@ -32,8 +32,22 @@ app.get("/seasons", (req, res) => {
   });
 });
 app.get("/players/:clubId/:seasonId", (req, res) => {
-  var sql =
-    "SELECT * FROM players as p JOIN teams as t on p.team_id = t.id JOIN leagues as l on t.league_id = l.id JOIN seasons as s on l.season_id = s.id WHERE p.team_id =1 and s.id=1";
+  var clubId = req.params.clubId;
+  var seasonId = req.params.seasonId;
+  var sql = `SELECT * FROM players as p JOIN teams as t on p.team_id = t.id JOIN leagues as l on t.league_id = l.id JOIN seasons as s on l.season_id = s.id WHERE p.team_id =${clubId} and s.id=${seasonId}`;
+
+  con.query(sql, [], (error, rows) => {
+    if (error) {
+      return console.error(error.message);
+    }
+    let result = Object.values(JSON.parse(JSON.stringify(rows)));
+    res.send(result);
+  });
+});
+app.get("/teams/:leagueId/:seasonId", (req, res) => {
+  var leagueId = req.params.leagueId;
+  var seasonId = req.params.seasonId;
+  var sql = `SELECT t.id, t.name FROM teams as t JOIN leagues as l on t.league_id = l.id JOIN seasons as s on l.season_id = s.id WHERE l.id = ${leagueId} and s.id = ${seasonId} `;
 
   con.query(sql, [], (error, rows) => {
     if (error) {
