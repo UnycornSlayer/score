@@ -23,25 +23,29 @@ class _PlayersPageState extends State<PlayersPage> {
   @override
   void initState() {
     super.initState();
-    fetchSeasons();
     getIsLogin().then((result) {
       setState(() {
         _isLogin = result;
       });
     });
+    fetchSeasons().then((result) {
+      setState(() {
+        seasonsList = result;
+        dropdownvalue = seasonsList[0];
+      });
+    });
   }
 
   Future<List<String>> fetchSeasons() async {
-    var url = Uri.parse('http://192.168.1.231:3000/seasons');
+    // var url = Uri.parse('http://192.168.1.231:3000/seasons');
+    var url = Uri.parse('http://192.168.1.64:3000/seasons');
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
       var seasons = json.decode(response.body);
       for (var i = 0; i < seasons.length; i++) {
-        cons.log(seasons[i]['name'].toString(), name: "Inside fetchSeasons");
         seasonsList.add(seasons[i]['name'].toString());
       }
-      dropdownvalue = seasonsList[0];
       return seasonsList;
     } else {
       throw Exception('Failed to load seasons');
