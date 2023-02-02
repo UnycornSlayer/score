@@ -31,7 +31,7 @@ class _PlayersPageState extends State<PlayersPage> {
     });
   }
 
-  Future<List<String>> fetchSeasons() async {
+  Future<void> fetchSeasons() async {
     var url = Uri.parse('http://192.168.1.231:3000/seasons');
     var response = await http.get(url);
 
@@ -41,8 +41,9 @@ class _PlayersPageState extends State<PlayersPage> {
         cons.log(seasons[i]['name'].toString(), name: "Inside fetchSeasons");
         seasonsList.add(seasons[i]['name'].toString());
       }
-      dropdownvalue = seasonsList[0];
-      return seasonsList;
+      setState(() {
+        dropdownvalue = seasonsList[0];
+      });
     } else {
       throw Exception('Failed to load seasons');
     }
