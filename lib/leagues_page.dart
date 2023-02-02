@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 import 'package:score/login_page.dart';
+import 'package:score/players_page.dart';
 
 class LeaguesPage extends StatefulWidget {
   const LeaguesPage({super.key});
@@ -47,12 +48,12 @@ class _LeaguesPageState extends State<LeaguesPage> {
         // );
         break;
       case 1:
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => SearchPage(),
-        //   ),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const PlayersPage(),
+          ),
+        );
         break;
       case 2:
         Navigator.pushAndRemoveUntil(
@@ -137,7 +138,7 @@ class _LeaguesPageState extends State<LeaguesPage> {
           ),
           const BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            label: "Search",
+            label: "Players",
           ),
           BottomNavigationBarItem(
             icon: Icon(_isLogin ? Icons.logout : Icons.person),

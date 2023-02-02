@@ -1,9 +1,12 @@
-// ignore_for_file: unused_field, prefer_final_fields, library_private_types_in_public_api
+// ignore_for_file: unused_field, prefer_final_fields, library_private_types_in_public_api, import_of_legacy_library_into_null_safe
 
 import 'dart:async';
+import 'dart:convert';
+import 'dart:developer' as cons;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
+import 'package:http/http.dart' as http;
 import 'package:score/login_page.dart';
 
 class PlayersPage extends StatefulWidget {
@@ -14,33 +17,42 @@ class PlayersPage extends StatefulWidget {
 }
 
 class _PlayersPageState extends State<PlayersPage> {
-  String _selectedFilter = 'All';
-
-// List of items in our dropdown menu
-  String dropdownvalue = 'Item 1';
-  var items = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
-  ];
-
-  Future<bool> getIsLogin() async {
-    return await FlutterSession().get("isLogin");
-  }
-
-  bool _isLogin = false;
+  List<String> seasonsList = [];
+  String dropdownvalue = 'All';
 
   @override
   void initState() {
     super.initState();
+    fetchSeasons();
     getIsLogin().then((result) {
       setState(() {
         _isLogin = result;
       });
     });
   }
+
+  Future<List<String>> fetchSeasons() async {
+    var url = Uri.parse('http://192.168.1.231:3000/seasons');
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      var seasons = json.decode(response.body);
+      for (var i = 0; i < seasons.length; i++) {
+        cons.log(seasons[i]['name'].toString(), name: "Inside fetchSeasons");
+        seasonsList.add(seasons[i]['name'].toString());
+      }
+      dropdownvalue = seasonsList[0];
+      return seasonsList;
+    } else {
+      throw Exception('Failed to load seasons');
+    }
+  }
+
+  Future<bool> getIsLogin() async {
+    return await FlutterSession().get("isLogin");
+  }
+
+  bool _isLogin = false;
 
   int _selectedIndex = 0;
 
@@ -59,12 +71,12 @@ class _PlayersPageState extends State<PlayersPage> {
         // );
         break;
       case 1:
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => SearchPage(),
-        //   ),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const PlayersPage(),
+          ),
+        );
         break;
       case 2:
         Navigator.pushAndRemoveUntil(
@@ -83,20 +95,7 @@ class _PlayersPageState extends State<PlayersPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Players List"),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(_isLogin ? Icons.logout : Icons.person),
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoginPage(),
-                ),
-              );
-            },
-          ),
-        ],
+        title: const Text("Competitions"),
       ),
       body: Column(
         children: [
@@ -113,7 +112,8 @@ class _PlayersPageState extends State<PlayersPage> {
                   icon: const Icon(Icons.keyboard_arrow_down),
 
                   // Array list of items
-                  items: items.map((String items) {
+
+                  items: seasonsList.map((String items) {
                     return DropdownMenuItem(
                       value: items,
                       child: Text(items),
@@ -148,18 +148,18 @@ class _PlayersPageState extends State<PlayersPage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
+        items: [
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: "Home",
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            label: "Search",
+            label: "Players",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
+            icon: Icon(_isLogin ? Icons.logout : Icons.person),
+            label: _isLogin ? "Logout" : "Login",
           ),
         ],
       ),
