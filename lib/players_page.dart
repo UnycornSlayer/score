@@ -37,7 +37,7 @@ class _PlayersPageState extends State<PlayersPage> {
 
   Future<List<String>> fetchSeasons() async {
     // var url = Uri.parse('http://192.168.1.231:3000/seasons');
-    var url = Uri.parse('http://192.168.1.64:3000/seasons');
+    var url = Uri.parse('http://localhost:3000/seasons');
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
