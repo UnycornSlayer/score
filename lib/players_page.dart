@@ -29,7 +29,7 @@ class _PlayersPageState extends State<PlayersPage> {
       String birthday,
       String education,
       int passport) async {
-    var url = Uri.parse('http://localhost:3000/users');
+    var url = Uri.parse('http://192.168.1.64:3000/users');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -355,12 +355,12 @@ class _PlayersPageState extends State<PlayersPage> {
   }
   // ----------------- END OF MODAL ------------------------- //
 
-  List<String> seasonsList = [];
+  List<Map<String, dynamic>> seasonsList = [];
   List<String> playersList = [];
   List<String> playersFirstName = [];
   List<String> playersLastName = [];
   List<String> playersImage = [];
-  String dropdownvalue = 'All';
+  String dropdownvalue = '';
 
   @override
   void initState() {
@@ -375,11 +375,11 @@ class _PlayersPageState extends State<PlayersPage> {
     fetchSeasons().then((result) {
       setState(() {
         seasonsList = result;
-        dropdownvalue = seasonsList[0];
+        dropdownvalue = seasonsList[0]['id'];
       });
     });
 
-    fetchPlayers(1).then((result) {
+    fetchPlayers(1, 1).then((result) {
       setState(() {
         playersList = result;
       });
@@ -387,15 +387,20 @@ class _PlayersPageState extends State<PlayersPage> {
   }
 
   // function to send GET request to API to get every Season
-  Future<List<String>> fetchSeasons() async {
+  Future<List<Map<String, dynamic>>> fetchSeasons() async {
     // var url = Uri.parse('http://192.168.1.231:3000/seasons');
-    var url = Uri.parse('http://localhost:3000/seasons');
+    var url = Uri.parse('http://192.168.1.64:3000/seasons');
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
       var seasons = json.decode(response.body);
       for (var i = 0; i < seasons.length; i++) {
-        seasonsList.add(seasons[i]['name'].toString());
+        seasonsList.add(
+          {
+            "id": seasons[i]['id'].toString(),
+            "name": seasons[i]['name'].toString(),
+          },
+        );
       }
       return seasonsList;
     } else {
@@ -404,9 +409,9 @@ class _PlayersPageState extends State<PlayersPage> {
   }
 
   // function to send GET request to API to get every player of this club
-  Future<List<String>> fetchPlayers(clubId) async {
+  Future<List<String>> fetchPlayers(int clubId, int seasonId) async {
     // var url = Uri.parse('http://192.168.1.231:3000/seasons');
-    var url = Uri.parse('http://localhost:3000/players/1/1');
+    var url = Uri.parse('http://192.168.1.64:3000/players/1/$seasonId');
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -504,17 +509,22 @@ class _PlayersPageState extends State<PlayersPage> {
 
                   // Array list of items
 
-                  items: seasonsList.map((String items) {
+                  items: seasonsList.map((Map<String, dynamic> items) {
                     return DropdownMenuItem(
-                      value: items,
-                      child: Text(items),
+                      value: items['id'],
+                      child: Text(items['name']),
                     );
                   }).toList(),
                   // After selecting the desired option,it will
                   // change button value to selected value
-                  onChanged: (String? newValue) {
+                  onChanged: (dynamic newValue) {
                     setState(() {
-                      dropdownvalue = newValue!;
+                      dropdownvalue = newValue;
+                      fetchPlayers(1, int.parse(dropdownvalue)).then((result) {
+                        setState(() {
+                          playersList = result;
+                        });
+                      });
                     });
                   },
                 ),
