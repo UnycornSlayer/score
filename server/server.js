@@ -31,6 +31,18 @@ app.get("/seasons", (req, res) => {
     res.send(result);
   });
 });
+app.get("/players/:clubId/:seasonId", (req, res) => {
+  var sql =
+    "SELECT * FROM players as p JOIN teams as t on p.team_id = t.id JOIN leagues as l on t.league_id = l.id JOIN seasons as s on l.season_id = s.id WHERE p.team_id =1 and s.id=1";
+
+  con.query(sql, [], (error, rows) => {
+    if (error) {
+      return console.error(error.message);
+    }
+    let result = Object.values(JSON.parse(JSON.stringify(rows)));
+    res.send(result);
+  });
+});
 
 app.post("/users", (req, res) => {
   const { firstName, lastName, height, weight, birthday, education, passport } =

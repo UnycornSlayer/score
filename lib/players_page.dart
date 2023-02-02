@@ -20,6 +20,7 @@ class PlayersPage extends StatefulWidget {
 }
 
 class _PlayersPageState extends State<PlayersPage> {
+  // function to send POST request to API with form params
   Future<void> sendApiCallWithParams(
       String firstName,
       String lastName,
@@ -48,6 +49,7 @@ class _PlayersPageState extends State<PlayersPage> {
     }
   }
 
+// ----------------- Modal data ------------------------- //
   TextEditingController dateinput = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String _firstName = '';
@@ -57,7 +59,9 @@ class _PlayersPageState extends State<PlayersPage> {
   int _height = 0;
   int _weight = 0;
   int _passport = 0;
+  // ----------------- END OF data ------------------------- //
 
+// ----------------- START OF MODAL ------------------------- //
   _showFullModal(context) {
     showGeneralDialog(
       context: context,
@@ -167,7 +171,7 @@ class _PlayersPageState extends State<PlayersPage> {
                                     if (value == '') {
                                       return 'Please enter your height';
                                     } else if (int.parse(value!) < 130 ||
-                                        int.parse(value!) > 250) {
+                                        int.parse(value) > 250) {
                                       return 'Please enter a valid height';
                                     }
                                     return null;
@@ -186,7 +190,7 @@ class _PlayersPageState extends State<PlayersPage> {
                                     if (value == '') {
                                       return 'Please enter your weight';
                                     } else if (int.parse(value!) < 50 ||
-                                        int.parse(value!) > 160) {
+                                        int.parse(value) > 160) {
                                       return 'Please enter a valid weight';
                                     }
                                     return null;
@@ -310,6 +314,7 @@ class _PlayersPageState extends State<PlayersPage> {
                                   _birthDay,
                                   _education,
                                   _passport);
+                              Navigator.of(context).pop();
                             } else {
                               // Show a popup indicating login failure
                               await showDialog(
@@ -348,8 +353,13 @@ class _PlayersPageState extends State<PlayersPage> {
       },
     );
   }
+  // ----------------- END OF MODAL ------------------------- //
 
   List<String> seasonsList = [];
+  List<String> playersList = [];
+  List<String> playersFirstName = [];
+  List<String> playersLastName = [];
+  List<String> playersImage = [];
   String dropdownvalue = 'All';
 
   @override
@@ -368,8 +378,15 @@ class _PlayersPageState extends State<PlayersPage> {
         dropdownvalue = seasonsList[0];
       });
     });
+
+    fetchPlayers(1).then((result) {
+      setState(() {
+        playersList = result;
+      });
+    });
   }
 
+  // function to send GET request to API to get every Season
   Future<List<String>> fetchSeasons() async {
     // var url = Uri.parse('http://192.168.1.231:3000/seasons');
     var url = Uri.parse('http://localhost:3000/seasons');
@@ -386,6 +403,26 @@ class _PlayersPageState extends State<PlayersPage> {
     }
   }
 
+  // function to send GET request to API to get every player of this club
+  Future<List<String>> fetchPlayers(clubId) async {
+    // var url = Uri.parse('http://192.168.1.231:3000/seasons');
+    var url = Uri.parse('http://localhost:3000/players/1/1');
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      var players = json.decode(response.body);
+      for (var i = 0; i < players.length; i++) {
+        playersFirstName.add(players[i]["first_name"].toString());
+        playersLastName.add(players[i]["last_name"].toString());
+        playersImage.add(players[i]["photo"].toString());
+      }
+      return playersList;
+    } else {
+      throw Exception('Failed to load players');
+    }
+  }
+
+  // function to get Session Variable isLogin
   Future<bool> getIsLogin() async {
     return await FlutterSession().get("isLogin");
   }
@@ -394,13 +431,14 @@ class _PlayersPageState extends State<PlayersPage> {
 
   int _selectedIndex = 1;
 
+// function to handle NavBar clicks
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
 
     switch (index) {
-      case 0:
+      case 0: // First element on Navbar
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -408,7 +446,7 @@ class _PlayersPageState extends State<PlayersPage> {
           ),
         );
         break;
-      case 1:
+      case 1: // Second element on Navbar
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -416,7 +454,7 @@ class _PlayersPageState extends State<PlayersPage> {
           ),
         );
         break;
-      case 2:
+      case 2: // Third element on Navbar
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -456,6 +494,7 @@ class _PlayersPageState extends State<PlayersPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                // TODO: See what is going on with the Click event to be able to send seasonId to API Call
                 DropdownButton(
                   // Initial Value
                   value: dropdownvalue,
@@ -484,13 +523,11 @@ class _PlayersPageState extends State<PlayersPage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: 10,
+              itemCount: playersFirstName.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text("Item $index"),
-                  onTap: () {
-                    // Handle item click
-                  },
+                  title: Text(
+                      "${playersFirstName[index]} ${playersLastName[index]}"),
                 );
               },
             ),
