@@ -439,7 +439,8 @@ class _PlayersPageState extends State<PlayersPage> {
           "id": players[i]["id"].toString(),
           "first_name": players[i]["first_name"].toString(),
           "last_name": players[i]["last_name"].toString(),
-          "contract_date": players[i]["contract_date"].toString()
+          "contract_date": players[i]["contract_date"].toString(),
+          "photo": players[i]["photo"].toString()
         });
       }
       return playersList;
@@ -597,7 +598,7 @@ class _PlayersPageState extends State<PlayersPage> {
                       ),
                     )
                   },
-                  leading: Image.asset('assets/default.png',
+                  leading: Image.network('assets/default.png',
                       height: 100, width: 100),
                   title: Text(
                       "${playersList[index]["first_name"]} ${playersList[index]["last_name"]}"),

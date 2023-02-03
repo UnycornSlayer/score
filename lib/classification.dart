@@ -251,7 +251,7 @@ class _ClassificationState extends State<Classification> {
                           ),
                           SizedBox(
                             width: 60,
-                            child: Text("${51 - (index * 3)}"),
+                            child: Text("${55 - (index * 3)}"),
                           )
                         ],
                       );

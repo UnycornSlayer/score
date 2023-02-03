@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 var mysql = require("mysql");
 const bodyParser = require("body-parser");
+const request = require("request");
 
 const app = express();
 
@@ -20,6 +21,18 @@ con.connect(function (err) {
   console.log("Connected!");
 });
 
+app.get("/images/:imageUrl", (req, res) => {
+  var imageUrl = req.params.imageUrl;
+
+  request({ url: imageUrl, encoding: null }, (error, response, body) => {
+    if (error) {
+      return console.error(error.message);
+    }
+    res.set("Content-Type", response.headers["content-type"]);
+    res.send(body);
+  });
+});
+
 app.get("/seasons", (req, res) => {
   var sql = "SELECT * FROM seasons";
 
@@ -36,13 +49,16 @@ app.get("/players/:clubId/:seasonId", async (req, res) => {
   var clubId = req.params.clubId;
   var seasonId = req.params.seasonId;
   var teamID = await getClubPlayersForDifferentSeason(clubId, seasonId);
-  var sql = `SELECT p.id, p.first_name,p.last_name,p.contract_date FROM players as p JOIN teams as t on p.team_id = t.id JOIN leagues as l on t.league_id = l.id JOIN seasons as s on l.season_id = s.id WHERE p.team_id =${teamID} and s.id=${seasonId}`;
+  var sql = `SELECT p.id, p.first_name,p.last_name,p.contract_date,p.photo FROM players as p JOIN teams as t on p.team_id = t.id JOIN leagues as l on t.league_id = l.id JOIN seasons as s on l.season_id = s.id WHERE p.team_id =${teamID} and s.id=${seasonId}`;
 
   con.query(sql, [], (error, rows) => {
     if (error) {
       return console.error(error.message);
     }
     let result = Object.values(JSON.parse(JSON.stringify(rows)));
+    result.forEach((p) => {
+      p.photo = `/images/${p.photo}`;
+    });
     res.send(result);
   });
 });
