@@ -602,28 +602,30 @@ class _PlayersPageState extends State<PlayersPage> {
               itemCount: playersList.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                    onTap: () => {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PlayerProfile(
-                                playerId: int.parse(playersList[index]["id"]),
-                              ),
-                            ),
-                          )
-                        },
-                    leading: Image.network('assets/default.png',
-                        height: 100, width: 100),
-                    title: Text(
-                        "${playersList[index]["first_name"]} ${playersList[index]["last_name"]}"),
-                    subtitle: Text(
-                        "Contracted at: ${playersList[index]["contract_date"]} (${daysSinceDate(playersList[index]["contract_date"]).toString()} days)"),
-                    trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => deletePlayer(
-                            int.parse(playersList[index]["id"]),
-                            _clubId!,
-                            _seasonId!)));
+                  onTap: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlayerProfile(
+                          playerId: int.parse(playersList[index]["id"]),
+                        ),
+                      ),
+                    )
+                  },
+                  leading: Image.network('assets/default.png',
+                      height: 100, width: 100),
+                  title: Text(
+                      "${playersList[index]["first_name"]} ${playersList[index]["last_name"]}"),
+                  subtitle: Text(
+                      "Contracted at: ${playersList[index]["contract_date"]} (${daysSinceDate(playersList[index]["contract_date"]).toString()} days)"),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => deletePlayer(
+                        int.parse(playersList[index]["id"]),
+                        _clubId!,
+                        _seasonId!),
+                  ),
+                );
               },
             ),
           ),

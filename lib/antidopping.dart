@@ -42,6 +42,19 @@ class _AntidoppingState extends State<Antidopping> {
     });
   }
 
+  void deletePlayer(int id, int clubId) async {
+    // var url = Uri.parse('http://192.168.1.231:3000/seasons');
+    var url = Uri.parse('http://localhost:3000/delete-player/$id');
+    var response = await http.delete(url);
+
+    if (response.statusCode == 200) {
+      await fetchPlayers(clubId, 0);
+      setState(() {});
+    } else {
+      throw Exception('Failed to delete player');
+    }
+  }
+
   // function to send GET request to API to get every player of this club
   Future<List<Map<String, dynamic>>> fetchPlayers(int clubId, int days) async {
     playersList.clear();
@@ -175,7 +188,14 @@ class _AntidoppingState extends State<Antidopping> {
                           "${playersList[index]["first_name"]} ${playersList[index]["last_name"]}"),
                       subtitle: Text(
                           "Contracted at: ${playersList[index]["antidopping_date"]} (${daysSinceDate(playersList[index]["antidopping_date"]).toString()} days)"),
-                    ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => deletePlayer(
+                          int.parse(playersList[index]["id"]),
+                          (widget.clubId!),
+                        ),
+                      ),
+                    )
                   ],
                 );
               },

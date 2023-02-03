@@ -39,8 +39,22 @@ class _ContractsState extends State<Contracts> {
     });
   }
 
+  void deletePlayer(int id) async {
+    // var url = Uri.parse('http://192.168.1.231:3000/seasons');
+    var url = Uri.parse('http://localhost:3000/delete-player/$id');
+    var response = await http.delete(url);
+
+    if (response.statusCode == 200) {
+      await fetchPlayers();
+      setState(() {});
+    } else {
+      throw Exception('Failed to delete player');
+    }
+  }
+
   // function to send GET request to API to get every player of this club
   Future<List<Map<String, dynamic>>> fetchPlayers() async {
+    playersList = [];
     // var url = Uri.parse('http://192.168.1.231:3000/contracts');
     var url = Uri.parse('http://localhost:3000/contracts');
     var response = await http.get(url);
@@ -181,6 +195,11 @@ class _ContractsState extends State<Contracts> {
                             "${playersList[index]["first_name"]} ${playersList[index]["last_name"]}"),
                         subtitle: Text(
                             "Contracted at: ${playersList[index]["contract_date"]} (${daysFromToday(playersList[index]["contract_date"]).toString()} days)"),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () =>
+                              deletePlayer(int.parse(playersList[index]["id"])),
+                        ),
                       ),
                     ],
                   );
@@ -202,6 +221,11 @@ class _ContractsState extends State<Contracts> {
                         "${playersList[index]["first_name"]} ${playersList[index]["last_name"]}"),
                     subtitle: Text(
                         "Contracted at: ${playersList[index]["contract_date"]} (${daysFromToday(playersList[index]["contract_date"]).toString()} days)"),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () =>
+                          deletePlayer(int.parse(playersList[index]["id"])),
+                    ),
                   );
                 }
               },
