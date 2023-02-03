@@ -8,6 +8,7 @@ import 'dart:developer' as cons;
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 import 'package:http/http.dart' as http;
+import 'package:score/contracts.dart';
 import 'package:score/leagues_page.dart';
 import 'package:score/login_page.dart';
 
@@ -138,7 +139,7 @@ class _ClassificationState extends State<Classification> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const PlayersPage(),
+            builder: (context) => const Contracts(),
           ),
         );
         break;
@@ -267,12 +268,12 @@ class _ClassificationState extends State<Classification> {
         onTap: _onItemTapped,
         items: [
           const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",
+            icon: Icon(Icons.list_alt_rounded),
+            label: "Leagues",
           ),
           const BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: "Players",
+            icon: Icon(Icons.content_paste_go),
+            label: "Contracts",
           ),
           BottomNavigationBarItem(
             icon: Icon(_isLogin ? Icons.logout : Icons.person),

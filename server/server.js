@@ -133,7 +133,7 @@ app.get("/contracts", (req, res) => {
   const query = `SELECT p.id,p.first_name,p.last_name,p.contract_date,p.photo,t.name,t.logo
   FROM players as p JOIN teams as t on p.team_id = t.id
   WHERE STR_TO_DATE(contract_date, '%d/%m/%Y') + INTERVAL 2 YEAR <= DATE_ADD(NOW(), INTERVAL 180 DAY)
-  ORDER BY t.name`;
+  ORDER BY t.name, STR_TO_DATE(contract_date, '%d/%m/%Y') ASC;`;
 
   // Execute the prepared statement
   con.query(query, (error, results) => {

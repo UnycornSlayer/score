@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_session/flutter_session.dart';
 import 'package:score/classification.dart';
+import 'package:score/contracts.dart';
 import 'package:score/login_page.dart';
-import 'package:score/players_page.dart';
 
 class LeaguesPage extends StatefulWidget {
   const LeaguesPage({super.key});
@@ -49,11 +49,11 @@ class _LeaguesPageState extends State<LeaguesPage> {
           ),
         );
         break;
-      case 1:
+      case 1: // Second element on Navbar
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const PlayersPage(),
+            builder: (context) => const Contracts(),
           ),
         );
         break;
@@ -139,12 +139,12 @@ class _LeaguesPageState extends State<LeaguesPage> {
         onTap: _onItemTapped,
         items: [
           const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",
+            icon: Icon(Icons.list_alt_rounded),
+            label: "Leagues",
           ),
           const BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: "Players",
+            icon: Icon(Icons.content_paste_go),
+            label: "Contracts",
           ),
           BottomNavigationBarItem(
             icon: Icon(_isLogin ? Icons.logout : Icons.person),
