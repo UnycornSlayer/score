@@ -136,7 +136,7 @@ class _ClassificationState extends State<Classification> {
         );
         break;
       case 1: // Second element on Navbar
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => const Contracts(),

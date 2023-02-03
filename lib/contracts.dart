@@ -89,7 +89,7 @@ class _ContractsState extends State<Contracts> {
         );
         break;
       case 1: // Second element on Navbar
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => const Contracts(),
