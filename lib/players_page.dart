@@ -425,9 +425,23 @@ class _PlayersPageState extends State<PlayersPage> {
     }
   }
 
+  void deletePlayer(int id, int clubId, int seasonId) async {
+    // var url = Uri.parse('http://192.168.1.231:3000/seasons');
+    var url = Uri.parse('http://localhost:3000/delete-player/$id');
+    var response = await http.delete(url);
+
+    if (response.statusCode == 200) {
+      await fetchPlayers(clubId, seasonId);
+      setState(() {});
+    } else {
+      throw Exception('Failed to delete player');
+    }
+  }
+
   // function to send GET request to API to get every player of this club
   Future<List<Map<String, dynamic>>> fetchPlayers(
       int clubId, int seasonId) async {
+    playersList = [];
     // var url = Uri.parse('http://192.168.1.231:3000/seasons');
     var url = Uri.parse('http://localhost:3000/players/$clubId/$seasonId');
     var response = await http.get(url);
@@ -588,23 +602,28 @@ class _PlayersPageState extends State<PlayersPage> {
               itemCount: playersList.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  onTap: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PlayerProfile(
-                          playerId: int.parse(playersList[index]["id"]),
-                        ),
-                      ),
-                    )
-                  },
-                  leading: Image.network('assets/default.png',
-                      height: 100, width: 100),
-                  title: Text(
-                      "${playersList[index]["first_name"]} ${playersList[index]["last_name"]}"),
-                  subtitle: Text(
-                      "Contracted at: ${playersList[index]["contract_date"]} (${daysSinceDate(playersList[index]["contract_date"]).toString()} days)"),
-                );
+                    onTap: () => {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlayerProfile(
+                                playerId: int.parse(playersList[index]["id"]),
+                              ),
+                            ),
+                          )
+                        },
+                    leading: Image.network('assets/default.png',
+                        height: 100, width: 100),
+                    title: Text(
+                        "${playersList[index]["first_name"]} ${playersList[index]["last_name"]}"),
+                    subtitle: Text(
+                        "Contracted at: ${playersList[index]["contract_date"]} (${daysSinceDate(playersList[index]["contract_date"]).toString()} days)"),
+                    trailing: IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => deletePlayer(
+                            int.parse(playersList[index]["id"]),
+                            _clubId!,
+                            _seasonId!)));
               },
             ),
           ),

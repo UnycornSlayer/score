@@ -77,6 +77,19 @@ app.get("/teams/:leagueId/:seasonId", (req, res) => {
   });
 });
 
+app.delete("/delete-player/:Id", (req, res) => {
+  var id = req.params.Id;
+  var sql = `DELETE FROM players WHERE id =${id}`;
+
+  con.query(sql, [], (error, rows) => {
+    if (error) {
+      return console.error(error.message);
+    }
+    let result = Object.values(JSON.parse(JSON.stringify(rows)));
+    res.send(result);
+  });
+});
+
 app.post("/users/:clubId", (req, res) => {
   var clubId = req.params.clubId;
   const { firstName, lastName, height, weight, birthday, education, passport } =
