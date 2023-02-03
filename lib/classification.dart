@@ -47,7 +47,7 @@ class _ClassificationState extends State<Classification> {
     fetchSeasons().then((result) {
       setState(() {
         seasonsList = result;
-        dropdownvalue = seasonsList[0]['id'];
+        dropdownvalue = seasonsList[_seasonId! - 1]['id'];
       });
     });
 
@@ -240,6 +240,7 @@ class _ClassificationState extends State<Classification> {
                                     builder: (context) => PlayersPage(
                                       clubId: int.parse(teamsIds[index]),
                                       clubName: teamsNames[index],
+                                      seasonId: int.parse(dropdownvalue),
                                     ),
                                   ),
                                 );

@@ -33,7 +33,7 @@ class _PlayersPageState extends State<PlayersPage> {
       String birthday,
       String education,
       int passport) async {
-    var url = Uri.parse('http://localhost:3000/users');
+    var url = Uri.parse('http://localhost:3000/users/${_clubId}');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -50,6 +50,14 @@ class _PlayersPageState extends State<PlayersPage> {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to insert into the users table');
+    }
+    if (response.statusCode == 200) {
+      playersList.clear();
+      await fetchPlayers(_clubId!, _seasonId!).then((result) {
+        setState(() {
+          playersList = result;
+        });
+      });
     }
   }
 
@@ -382,7 +390,7 @@ class _PlayersPageState extends State<PlayersPage> {
     fetchSeasons().then((result) {
       setState(() {
         seasonsList = result;
-        dropdownvalue = seasonsList[0]['id'];
+        dropdownvalue = seasonsList[_seasonId! - 1]['id'];
       });
     });
     fetchPlayers(_clubId!, _seasonId!).then((result) {
@@ -427,6 +435,7 @@ class _PlayersPageState extends State<PlayersPage> {
         playersList.add({
           "first_name": players[i]["first_name"].toString(),
           "last_name": players[i]["last_name"].toString(),
+          "contract_date": players[i]["contract_date"].toString()
         });
       }
       return playersList;
@@ -481,6 +490,18 @@ class _PlayersPageState extends State<PlayersPage> {
     }
   }
 
+  int daysSinceDate(String date) {
+    cons.log(date, name: "Date");
+    final dateParts = date.split("/");
+    final day = int.parse(dateParts[0]);
+    final month = int.parse(dateParts[1]);
+    final year = int.parse(dateParts[2]);
+    final givenDate = DateTime(year, month, day);
+    final currentDate = DateTime.now();
+    final difference = currentDate.difference(givenDate);
+    return difference.inDays;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -509,6 +530,10 @@ class _PlayersPageState extends State<PlayersPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                const Text(
+                  "Season:  ",
+                  style: TextStyle(fontSize: 16),
+                ),
                 DropdownButton(
                   // Initial Value
                   value: dropdownvalue,
@@ -554,7 +579,8 @@ class _PlayersPageState extends State<PlayersPage> {
                   },
                   title: Text(
                       "${playersList[index]["first_name"]} ${playersList[index]["last_name"]}"),
-                  subtitle: const Text("Contrado a: "),
+                  subtitle: Text(
+                      "Contracted at: ${playersList[index]["contract_date"]} (${daysSinceDate(playersList[index]["contract_date"]).toString()} days)"),
                 );
               },
             ),
