@@ -188,13 +188,15 @@ class _AntidoppingState extends State<Antidopping> {
                           "${playersList[index]["first_name"]} ${playersList[index]["last_name"]}"),
                       subtitle: Text(
                           "Contracted at: ${playersList[index]["antidopping_date"]} (${daysSinceDate(playersList[index]["antidopping_date"]).toString()} days)"),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => deletePlayer(
-                          int.parse(playersList[index]["id"]),
-                          (widget.clubId!),
-                        ),
-                      ),
+                      trailing: _isLogin
+                          ? IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () => deletePlayer(
+                                int.parse(playersList[index]["id"]),
+                                (widget.clubId!),
+                              ),
+                            )
+                          : null,
                     )
                   ],
                 );
