@@ -36,7 +36,7 @@ app.get("/players/:clubId/:seasonId", async (req, res) => {
   var clubId = req.params.clubId;
   var seasonId = req.params.seasonId;
   var teamID = await getClubPlayersForDifferentSeason(clubId, seasonId);
-  var sql = `SELECT * FROM players as p JOIN teams as t on p.team_id = t.id JOIN leagues as l on t.league_id = l.id JOIN seasons as s on l.season_id = s.id WHERE p.team_id =${teamID} and s.id=${seasonId}`;
+  var sql = `SELECT p.id, p.first_name,p.last_name,p.contract_date FROM players as p JOIN teams as t on p.team_id = t.id JOIN leagues as l on t.league_id = l.id JOIN seasons as s on l.season_id = s.id WHERE p.team_id =${teamID} and s.id=${seasonId}`;
 
   con.query(sql, [], (error, rows) => {
     if (error) {
@@ -114,8 +114,18 @@ app.post("/users/:clubId", (req, res) => {
   );
 });
 
-app.listen(3000, () => {
-  console.log("Example app listening on port 3000!");
+app.get("/player/:playerId", (req, res) => {
+  var playerId = req.params.playerId;
+  // Prepare the query
+  const query = `SELECT first_name,last_name,birth_date,height,weight,education,passport,antidopping_date,contract_date, teams.name as 'team_name' FROM players JOIN teams on players.team_id = teams.id WHERE players.id = ${playerId}`;
+
+  // Execute the prepared statement
+  con.query(query, (error, results) => {
+    if (error) {
+      return res.status(500).json({ error });
+    }
+    return res.json({ results });
+  });
 });
 
 function getClubPlayersForDifferentSeason(clubId, seasonId) {
@@ -135,3 +145,7 @@ function getClubPlayersForDifferentSeason(clubId, seasonId) {
     });
   });
 }
+
+app.listen(3000, () => {
+  console.log("Example app listening on port 3000!");
+});

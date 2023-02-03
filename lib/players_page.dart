@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:score/leagues_page.dart';
 import 'package:score/login_page.dart';
+import 'package:score/player_profile.dart';
 
 class PlayersPage extends StatefulWidget {
   final int? clubId;
@@ -33,7 +34,7 @@ class _PlayersPageState extends State<PlayersPage> {
       String birthday,
       String education,
       int passport) async {
-    var url = Uri.parse('http://localhost:3000/users/${_clubId}');
+    var url = Uri.parse('http://localhost:3000/users/$_clubId');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -433,6 +434,7 @@ class _PlayersPageState extends State<PlayersPage> {
       var players = json.decode(response.body);
       for (var i = 0; i < players.length; i++) {
         playersList.add({
+          "id": players[i]["id"].toString(),
           "first_name": players[i]["first_name"].toString(),
           "last_name": players[i]["last_name"].toString(),
           "contract_date": players[i]["contract_date"].toString()
@@ -491,7 +493,6 @@ class _PlayersPageState extends State<PlayersPage> {
   }
 
   int daysSinceDate(String date) {
-    cons.log(date, name: "Date");
     final dateParts = date.split("/");
     final day = int.parse(dateParts[0]);
     final month = int.parse(dateParts[1]);
@@ -575,8 +576,17 @@ class _PlayersPageState extends State<PlayersPage> {
               itemBuilder: (context, index) {
                 return ListTile(
                   onTap: () => {
-                    // TODO: Handle player click
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlayerProfile(
+                          playerId: int.parse(playersList[index]["id"]),
+                        ),
+                      ),
+                    )
                   },
+                  leading: Image.asset('assets/default.png',
+                      height: 100, width: 100),
                   title: Text(
                       "${playersList[index]["first_name"]} ${playersList[index]["last_name"]}"),
                   subtitle: Text(
