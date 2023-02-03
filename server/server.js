@@ -144,6 +144,26 @@ app.get("/contracts", (req, res) => {
   });
 });
 
+app.get("/antidopping/:days/:clubId", (req, res) => {
+  let days = req.params.days;
+  let clubId = req.params.clubId;
+  // Prepare the query
+  const query = `SELECT p.id,p.first_name,p.last_name,p.antidopping_date,p.photo,t.name,t.logo
+  FROM players as p 
+  JOIN teams as t on p.team_id = t.id
+  WHERE DATEDIFF(NOW(), STR_TO_DATE(p.antidopping_date, '%d/%m/%Y')) <= ${days}
+  AND t.id = ${clubId}
+  ORDER BY STR_TO_DATE(antidopping_date, '%d/%m/%Y') DESC`;
+
+  // Execute the prepared statement
+  con.query(query, (error, results) => {
+    if (error) {
+      return res.status(500).json({ error });
+    }
+    return res.json({ results });
+  });
+});
+
 function getClubPlayersForDifferentSeason(clubId, seasonId) {
   return new Promise((resolve, reject) => {
     const query = `SELECT t.name FROM teams as t WHERE t.id =${clubId};`;

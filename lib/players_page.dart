@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:score/antidopping.dart';
 import 'package:score/contracts.dart';
 import 'package:score/leagues_page.dart';
 import 'package:score/login_page.dart';
@@ -528,8 +529,20 @@ class _PlayersPageState extends State<PlayersPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                ElevatedButton(
+                    onPressed: () => {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Antidopping(
+                                clubId: _clubId,
+                              ),
+                            ),
+                          )
+                        },
+                    child: const Text("Check Anti-Dopping tests")),
                 const Text(
                   "Season:  ",
                   style: TextStyle(fontSize: 16),
