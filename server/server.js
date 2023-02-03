@@ -128,6 +128,22 @@ app.get("/player/:playerId", (req, res) => {
   });
 });
 
+app.get("/contracts", (req, res) => {
+  // Prepare the query
+  const query = `SELECT p.id,p.first_name,p.last_name,p.contract_date,p.photo,t.name,t.logo
+  FROM players as p JOIN teams as t on p.team_id = t.id
+  WHERE STR_TO_DATE(contract_date, '%d/%m/%Y') + INTERVAL 2 YEAR <= DATE_ADD(NOW(), INTERVAL 180 DAY)
+  ORDER BY t.name`;
+
+  // Execute the prepared statement
+  con.query(query, (error, results) => {
+    if (error) {
+      return res.status(500).json({ error });
+    }
+    return res.json({ results });
+  });
+});
+
 function getClubPlayersForDifferentSeason(clubId, seasonId) {
   return new Promise((resolve, reject) => {
     const query = `SELECT t.name FROM teams as t WHERE t.id =${clubId};`;
@@ -140,6 +156,7 @@ function getClubPlayersForDifferentSeason(clubId, seasonId) {
         if (error) {
           reject(error);
         }
+        console.log("ID to resolve: " + res[0].id);
         resolve(res[0].id);
       });
     });
