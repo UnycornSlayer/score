@@ -138,19 +138,6 @@ class _ContractsState extends State<Contracts> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Expiring Contracts"),
-        actions: <Widget>[
-          _isLogin
-              ? Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: IconButton(
-                    icon: const Icon(Icons.person_add),
-                    onPressed: () {
-                      // Add player modal
-                    },
-                  ),
-                )
-              : Container(),
-        ],
       ),
       body: Column(
         children: [
@@ -195,11 +182,13 @@ class _ContractsState extends State<Contracts> {
                             "${playersList[index]["first_name"]} ${playersList[index]["last_name"]}"),
                         subtitle: Text(
                             "Contracted at: ${playersList[index]["contract_date"]} (${daysFromToday(playersList[index]["contract_date"]).toString()} days)"),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () =>
-                              deletePlayer(int.parse(playersList[index]["id"])),
-                        ),
+                        trailing: _isLogin
+                            ? IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () => deletePlayer(
+                                    int.parse(playersList[index]["id"])),
+                              )
+                            : null,
                       ),
                     ],
                   );
